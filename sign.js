@@ -32,7 +32,7 @@ const main = async () => {
   console.log('Sinature:', signature);
 
   const messageHash = typedData.getMessageHash(typedDataValidate, process.env.ADDRESS);
-  console.log('Message Hash:', messageHash);    //0x7f900ea8442f469a9f1b5c50527d129a7561eb212c127d3f9dc612deb7d41cf
+  console.log('Message Hash:', messageHash);    //0x11357f6641ca52050112c85804ea8f59a98be12c5296af634ad4fef0d9af0f1
 
   const addressAbi = (await provider.getClassAt(process.env.ADDRESS)).abi;
   const addressContract = new Contract(addressAbi, process.env.ADDRESS, provider);

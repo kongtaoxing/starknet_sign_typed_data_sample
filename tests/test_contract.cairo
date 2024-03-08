@@ -11,8 +11,8 @@ use starknet_sign_typed_data::IMessageContractDispatcher;
 use starknet_sign_typed_data::IMessageContractDispatcherTrait;
 
 const MESSAGE_HASH: felt252 = 0x11357f6641ca52050112c85804ea8f59a98be12c5296af634ad4fef0d9af0f1;
-const SIG_R: felt252 = 3449381213729240051757458528449199117023858759534859749174941652635553920615;
-const SIG_S: felt252 = 310477324566662876124928593715437615590639348637296057953766603012095711532;
+const SIG_R: felt252 = 876127409893055305263472568801265030870686557618925505070655540045852847437;
+const SIG_S: felt252 = 3151883555888554397787478372336642758697253366189524680994584841657575588135;
 
 fn deploy_contract(name: felt252) -> ContractAddress {
     let contract = declare(name);
@@ -57,26 +57,23 @@ fn test_hash_domain () {
 
 }
 
-// #[test]
-// fn test_verify_signature() {
-//     let contract_address = deploy_contract('MessageContract');
+#[test]
+fn test_verify_signature() {
+    let contract_address = deploy_contract('MessageContract');
 
-//     let dispatcher = IMessageContractDispatcher { contract_address };
+    let dispatcher = IMessageContractDispatcher { contract_address };
 
-//     // let is_valid_signature = dispatcher.verify_signature();
-//     // assert(is_valid_signature == true, 'Invalid signature');
-//     // #[feature("safe_dispatcher")]
-//     // let balance_before = safe_dispatcher.get_balance().unwrap();
-//     // assert(balance_before == 0, 'Invalid balance');
-
-//     // #[feature("safe_dispatcher")]
-//     // match safe_dispatcher.increase_balance(0) {
-//     //     Result::Ok(_) => panic_with_felt252('Should have panicked'),
-//     //     Result::Err(panic_data) => {
-//     //         assert(*panic_data.at(0) == 'Amount cannot be 0', *panic_data.at(0));
-//     //     }
-//     // };
-// }
+    let is_valid_signature = dispatcher.verify_signature(
+        contract_address_try_from_felt252(0x05c6accc31f3689571cdf595828163bcfa0e5da7513cbd81d2d65e21e0dbbacb).unwrap(),
+        contract_address_try_from_felt252(0x7cffe72748da43594c5924129b4f18bffe643270a96b8760a6f2e2db49d9732).unwrap(),
+        'Hello, Vitalik!',
+        array![
+            SIG_R,
+            SIG_S
+        ]
+    );
+    assert(is_valid_signature == true, 'Invalid signature');
+}
 
 fn validate_lock_and_delegate_hash(
     chain_id: felt252, expected_domain_hash: felt252, expected_lock_hash: felt252,
