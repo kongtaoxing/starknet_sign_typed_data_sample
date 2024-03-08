@@ -74,35 +74,3 @@ fn test_verify_signature() {
     );
     assert(is_valid_signature == true, 'Invalid signature');
 }
-
-fn validate_lock_and_delegate_hash(
-    chain_id: felt252, expected_domain_hash: felt252, expected_lock_hash: felt252,
-) {
-    let contract_address = deploy_contract('MessageContract');
-
-    let dispatcher = IMessageContractDispatcher { contract_address };
-    let account = starknet::contract_address_const::<20>();
-    let delegatee = starknet::contract_address_const::<21>();
-    let amount = 200;
-    let nonce = 17;
-    let expiry = 1234;
-
-    // starknet::testing::set_chain_id(:chain_id);
-    assert(
-        dispatcher.lock_and_delegate_message_hash(
-            domain: expected_domain_hash, :account, :delegatee, :amount, :nonce, :expiry
-        ) == expected_lock_hash,
-        'LOCK_AND_DELEGATE_HASH_MISMATCH'
-    );
-}
-
-#[test]
-#[available_gas(30000000)]
-fn test_lock_and_delegate_message_hash() {
-
-    validate_lock_and_delegate_hash(
-        chain_id: 'SN_GOERLI',
-        expected_domain_hash: 0x7fbbf1a57a6370927e09cad58ccbfbd6b26b1cc6ee639edf8e0e36f020284bb,
-        expected_lock_hash: 0x700e4547ec169faac705c3f0bfdca19b12d1477ed0ce9d2f6824d541ce3c43c,
-    );
-}

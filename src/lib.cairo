@@ -7,21 +7,11 @@ trait IMessageContract<TContractState> {
     fn message_hash(self: @TContractState, account: ContractAddress, address: ContractAddress, message: felt252) -> felt252;
     fn hash_domain(self: @TContractState) -> felt252;
     fn calc_domain_hash(self: @TContractState) -> felt252;
-    fn lock_and_delegate_message_hash(
-        self: @TContractState,
-        domain: felt252,
-        account: ContractAddress,
-        delegatee: ContractAddress,
-        amount: u256,
-        nonce: felt252,
-        expiry: u64,
-    ) -> felt252;
 }
 
 #[starknet::contract]
 mod MessageContract {
 
-    use core::ecdsa::check_ecdsa_signature;
     use core::hash::HashStateTrait;
     use core::pedersen;
     use starknet::{ContractAddress, get_tx_info};
@@ -85,31 +75,6 @@ mod MessageContract {
                 STARKNET_DOMAIN_TYPE_HASH, NAME, VERSION, get_tx_info().unbox().chain_id
             ].span();
             pedersen_hash_span(elements: domain_state_inputs)
-        }
-
-        fn lock_and_delegate_message_hash(
-            self: @ContractState,
-            domain: felt252,
-            account: ContractAddress,
-            delegatee: ContractAddress,
-            amount: u256,
-            nonce: felt252,
-            expiry: u64,
-        ) -> felt252 {
-            let mut lock_and_delegate_inputs = array![
-                LOCK_AND_DELEGATE_TYPE_HASH,
-                delegatee.into(),
-                amount.low.into(), // 2**128 is good enough here, as the entire supply < 2**94.
-                nonce,
-                expiry.into()
-            ]
-                .span();
-            let lock_and_delegate_hash = pedersen_hash_span(elements: lock_and_delegate_inputs);
-            let mut message_inputs = array![
-                STARKNET_MESSAGE, domain, account.into(), lock_and_delegate_hash
-            ]
-                .span();
-            pedersen_hash_span(elements: message_inputs)
         }
     }
 
